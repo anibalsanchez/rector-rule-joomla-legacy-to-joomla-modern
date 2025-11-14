@@ -7,6 +7,7 @@ namespace Utils\Rector\Rector;
 use PhpParser\Node;
 use PhpParser\Node\Expr\StaticCall;
 use PhpParser\Node\Name;
+use PhpParser\Node\Stmt\Class_;
 use Rector\Rector\AbstractRector;
 use Symplify\RuleDocGenerator\ValueObject\CodeSample\CodeSample;
 use Symplify\RuleDocGenerator\ValueObject\RuleDefinition;
@@ -527,13 +528,26 @@ final class LegacyCallToJClassToJModernRector extends AbstractRector
      */
     public function getNodeTypes(): array
     {
-        return [StaticCall::class];
+        return [StaticCall::class, Class_::class];
     }
 
     /**
-     * @param StaticCall $node
+     * @param StaticCall|Class_ $node
      */
     public function refactor(Node $node): ?Node
+    {
+        if ($node instanceof StaticCall) {
+            return $this->refactorStaticCall($node);
+        }
+
+        if ($node instanceof Class_) {
+            return $this->refactorClass($node);
+        }
+
+        return null;
+    }
+
+    private function refactorStaticCall(StaticCall $node): ?Node
     {
         if (!$node->class instanceof Name) {
             return null;
@@ -549,5 +563,32 @@ final class LegacyCallToJClassToJModernRector extends AbstractRector
         $node->class = new Name($modernClass);
 
         return $node;
+    }
+
+    private function refactorClass(Class_ $node): ?Node
+    {
+        $hasChanged = false;
+
+        // Replace extends
+        if ($node->extends instanceof Name) {
+            $className = $node->extends->toString();
+            if (isset(self::LEGACY_TO_MODERN_MAP[$className])) {
+                $node->extends = new Name(self::LEGACY_TO_MODERN_MAP[$className]);
+                $hasChanged = true;
+            }
+        }
+
+        // Replace implements
+        foreach ($node->implements as $key => $implement) {
+            if ($implement instanceof Name) {
+                $className = $implement->toString();
+                if (isset(self::LEGACY_TO_MODERN_MAP[$className])) {
+                    $node->implements[$key] = new Name(self::LEGACY_TO_MODERN_MAP[$className]);
+                    $hasChanged = true;
+                }
+            }
+        }
+
+        return $hasChanged ? $node : null;
     }
 }
