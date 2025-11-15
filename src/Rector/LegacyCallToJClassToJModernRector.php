@@ -554,12 +554,12 @@ final class LegacyCallToJClassToJModernRector extends AbstractRector
         }
 
         $className = $node->class->toString();
+        $modernClass = $this->findModernClass($className);
 
-        if (!isset(self::LEGACY_TO_MODERN_MAP[$className])) {
+        if ($modernClass === null) {
             return null;
         }
 
-        $modernClass = self::LEGACY_TO_MODERN_MAP[$className];
         $node->class = new Name($modernClass);
 
         return $node;
@@ -572,8 +572,9 @@ final class LegacyCallToJClassToJModernRector extends AbstractRector
         // Replace extends
         if ($node->extends instanceof Name) {
             $className = $node->extends->toString();
-            if (isset(self::LEGACY_TO_MODERN_MAP[$className])) {
-                $node->extends = new Name(self::LEGACY_TO_MODERN_MAP[$className]);
+            $modernClass = $this->findModernClass($className);
+            if ($modernClass !== null) {
+                $node->extends = new Name($modernClass);
                 $hasChanged = true;
             }
         }
@@ -582,13 +583,25 @@ final class LegacyCallToJClassToJModernRector extends AbstractRector
         foreach ($node->implements as $key => $implement) {
             if ($implement instanceof Name) {
                 $className = $implement->toString();
-                if (isset(self::LEGACY_TO_MODERN_MAP[$className])) {
-                    $node->implements[$key] = new Name(self::LEGACY_TO_MODERN_MAP[$className]);
+                $modernClass = $this->findModernClass($className);
+                if ($modernClass !== null) {
+                    $node->implements[$key] = new Name($modernClass);
                     $hasChanged = true;
                 }
             }
         }
 
         return $hasChanged ? $node : null;
+    }
+
+    private function findModernClass(string $className): ?string
+    {
+        foreach (self::LEGACY_TO_MODERN_MAP as $legacy => $modern) {
+            if (strcasecmp($legacy, $className) === 0) {
+                return $modern;
+            }
+        }
+
+        return null;
     }
 }
