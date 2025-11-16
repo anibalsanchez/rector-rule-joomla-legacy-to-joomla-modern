@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Utils\Rector\Rector;
 
 use PhpParser\Node;
+use PhpParser\Node\Expr\ClassConstFetch;
 use PhpParser\Node\Expr\StaticCall;
 use PhpParser\Node\Name;
 use PhpParser\Node\Stmt\Class_;
@@ -528,16 +529,20 @@ final class LegacyCallToJClassToJModernRector extends AbstractRector
      */
     public function getNodeTypes(): array
     {
-        return [StaticCall::class, Class_::class];
+        return [StaticCall::class, ClassConstFetch::class, Class_::class];
     }
 
     /**
-     * @param StaticCall|Class_ $node
+     * @param StaticCall|ClassConstFetch|Class_ $node
      */
     public function refactor(Node $node): ?Node
     {
         if ($node instanceof StaticCall) {
             return $this->refactorStaticCall($node);
+        }
+
+        if ($node instanceof ClassConstFetch) {
+            return $this->refactorClassConstFetch($node);
         }
 
         if ($node instanceof Class_) {
@@ -548,6 +553,24 @@ final class LegacyCallToJClassToJModernRector extends AbstractRector
     }
 
     private function refactorStaticCall(StaticCall $node): ?Node
+    {
+        if (!$node->class instanceof Name) {
+            return null;
+        }
+
+        $className = $node->class->toString();
+        $modernClass = $this->findModernClass($className);
+
+        if ($modernClass === null) {
+            return null;
+        }
+
+        $node->class = new Name($modernClass);
+
+        return $node;
+    }
+
+    private function refactorClassConstFetch(ClassConstFetch $node): ?Node
     {
         if (!$node->class instanceof Name) {
             return null;

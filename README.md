@@ -291,6 +291,52 @@ All available in J3-J6: `JHtml`, `JHtmlAccess`, `JHtmlActionsDropdown`, `JHtmlAd
 
 The MIT License (MIT).
 
+## J6 Backward Compatibility Classes (The Great Namespace Shuffle)
+
+Because apparently moving perfectly functional classes between folders across major versions is a great use of everyone's time, the following `\Joomla\CMS\*` classes are deprecated and will be removed in Joomla 6. The classes themselves? Largely unchanged. The namespace? Different. Your codebase? Broken. Your weekend? Ruined.
+
+Use the framework alternatives (which are essentially the same classes, just in a different folder):
+
+### Filesystem Classes (deprecated 4.4, removed in 6.0)
+
+*Because `\Joomla\CMS\Filesystem` was clearly too intuitive. Let's move everything to `\Joomla\Filesystem` instead. Same functionality, different path. Progress!*
+
+| CMS Class | Framework Alternative |
+|-----------|----------------------|
+| `\Joomla\CMS\Filesystem\File` | `\Joomla\Filesystem\File` |
+| `\Joomla\CMS\Filesystem\Folder` | `\Joomla\Filesystem\Folder` |
+| `\Joomla\CMS\Filesystem\Path` | `\Joomla\Filesystem\Path` |
+| `\Joomla\CMS\Filesystem\Stream` | `\Joomla\Filesystem\Stream` |
+| `\Joomla\CMS\Filesystem\Patcher` | `\Joomla\Filesystem\Patcher` |
+| `\Joomla\CMS\Filesystem\FilesystemHelper` | `\Joomla\Filesystem\Helper` |
+| `\Joomla\CMS\Filesystem\Streams\StreamString` | `\Joomla\Filesystem\Stream\StringWrapper` |
+| `\Joomla\CMS\Filesystem\Support\StringController` | `\Joomla\Filesystem\Support\StringController` |
+
+### Application Classes (deprecated 4.0-4.3, removed in 6.0)
+
+*CLI applications worked fine in `\Joomla\CMS\Application`, but why keep things stable when you can deprecate them across multiple versions and force everyone to migrate to a completely different package?*
+
+| CMS Class | Framework Alternative |
+|-----------|----------------------|
+| `\Joomla\CMS\Application\BaseApplication` | `\Joomla\Application\AbstractApplication` |
+| `\Joomla\CMS\Application\CliApplication` | `joomla/console` package |
+| `\Joomla\CMS\Application\CLI\CliInput` | `joomla/console` package |
+| `\Joomla\CMS\Application\CLI\CliOutput` | `joomla/console` package |
+| `\Joomla\CMS\Application\CLI\ColorStyle` | `joomla/console` package |
+| `\Joomla\CMS\Application\CLI\Output\Stdout` | `joomla/console` package |
+| `\Joomla\CMS\Application\CLI\Output\Xml` | `joomla/console` package |
+
+### Input Classes (deprecated 4.3, removed in 6.0)
+
+*Input handling classes that have been working since Joomla 1.7? Time to move them! Not because they need improvement, but because... reasons.*
+
+| CMS Class | Framework Alternative |
+|-----------|----------------------|
+| `\Joomla\CMS\Input\Input` | `\Joomla\Input\Input` |
+| `\Joomla\CMS\Input\Cookie` | `\Joomla\Input\Cookie` |
+| `\Joomla\CMS\Input\Files` | `\Joomla\Input\Files` |
+| `\Joomla\CMS\Input\Json` | `\Joomla\Input\Json` |
+
 ## Notes
 
 - ✓ = Available in this version
@@ -299,3 +345,5 @@ The MIT License (MIT).
 - Database classes are only available as aliases in J4+
 - Extension-specific classes are only available in J4+
 - Some classes were removed or deprecated between versions
+- **J6 BC classes**: Classes in `\Joomla\CMS\*` namespace that are deprecated should be replaced with their `\Joomla\*` framework equivalents before J6. Yes, you'll need to update thousands of lines of code to change folder paths again. No, the classes themselves haven't meaningfully changed. Welcome to modern framework development.
+- **Pro tip**: This Rector rule exists because manually tracking these namespace gymnastics across 473 classes would drive anyone to madness. You're welcome.
