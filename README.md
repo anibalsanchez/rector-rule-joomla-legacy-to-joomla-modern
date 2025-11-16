@@ -20,6 +20,15 @@ $app = \Joomla\CMS\Factory::getApplication();
 $text = \Joomla\CMS\Language\Text::_('COM_EXAMPLE_LABEL');
 ```
 
+### ⚠️ Joomla 3-6 Compatibility Notice
+
+This rule supports Joomla 3 through Joomla 6, but here's the catch:
+
+- **Joomla 3-4-5**: Your code runs natively without any compatibility plugin. Life is good.
+- **Joomla 6**: Surprise! You'll need the compatibility plugin again because someone decided to move classes to yet another namespace location (`\Joomla\Filesystem\*`, `\Joomla\Input\*`, etc.). Same classes, different folders. Again.
+
+So yes, you're modernizing your code to use namespaces that will themselves become legacy in J6. But at least you'll be ready for the next round of namespace musical chairs. 🎪
+
 ## Quick Start
 
 ### Installation
