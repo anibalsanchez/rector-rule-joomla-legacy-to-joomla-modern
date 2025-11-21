@@ -439,6 +439,7 @@ final class LegacyCallToJClassToJModernRector extends AbstractRector
         'JSession' => '\\Joomla\\CMS\\Session\\Session',
         'JStream' => '\\Joomla\\CMS\\Filesystem\\Stream',
         'JStreamString' => '\\Joomla\\CMS\\Filesystem\\Streams\\StreamString',
+        'JString' => '\\Joomla\\String\\StringHelper',
         'JStringController' => '\\Joomla\\CMS\\Filesystem\\Support\\StringController',
         'JStringInflector' => '\\Joomla\\String\\Inflector',
         'JStringNormalise' => '\\Joomla\\String\\Normalise',
