@@ -1,0 +1,41 @@
+{
+    "name": "joomla-legacy-to-modern/rector-rule",
+    "description": "A Rector rule to modernize Joomla code by converting legacy J-class aliases to modern namespaced classes (J3-J6).",
+    "type": "library",
+    "license": "MIT",
+    "keywords": [
+        "joomla",
+        "rector",
+        "php",
+        "modernization",
+        "static-analysis",
+        "upgrade"
+    ],
+    "authors": [
+        {
+            "name": "Joomla Legacy To Modern contributors"
+        }
+    ],
+    "require": {
+        "php": "^8.2",
+        "rector/rector": "^2.0"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^11.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "Utils\\Rector\\Rector\\": "src/Rector"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Rector\\Tests\\TypeDeclaration\\Rector\\LegacyCallToJClassToJModernRector\\": "tests/Rector/LegacyCallToJClassToJModernRector"
+        }
+    },
+    "scripts": {
+        "test": "phpunit"
+    },
+    "config": {
+        "sort-packages": true
+    }}

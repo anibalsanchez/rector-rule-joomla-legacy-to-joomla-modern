@@ -1,1 +1,2 @@
-.amazonq
+vendor/
+composer.lock
