@@ -62,9 +62,54 @@ final class LegacyCallToJClassToJModernRector extends AbstractRector
 
         */
 
+        /*
+
+        NOTE on JCryptCipher / JCryptKey: the classmaps differ between J3 (Joomla\\Crypt\\*)
+        and J4+ (Joomla\\CMS\\Crypt\\*, which itself extends Joomla\\Crypt\\*). This is NOT
+        a bug: Joomla\\Crypt\\CipherInterface and Joomla\\Crypt\\Key exist as vendor packages
+        on all of Joomla 3-6, so mapping to the vendor class is safe and intentional.
+
+        */
+
+        /*
+
+        These mappings target classes that do NOT exist on all of Joomla 3-6,
+        so rewriting them unconditionally breaks a supported version:
+
+        // Concrete image filter classes: J3.10 maps JImageFilter* to
+        // Joomla\\Image\\Filter\\* (vendor), while Joomla\\CMS\\Image\\Filter\\* only
+        // exists in J4+ — no single target exists across J3-J6:
+        'JImageFilterBackgroundfill' => '\\Joomla\\CMS\\Image\\Filter\\Backgroundfill',
+        'JImageFilterBrightness' => '\\Joomla\\CMS\\Image\\Filter\\Brightness',
+        'JImageFilterContrast' => '\\Joomla\\CMS\\Image\\Filter\\Contrast',
+        'JImageFilterEdgedetect' => '\\Joomla\\CMS\\Image\\Filter\\Edgedetect',
+        'JImageFilterEmboss' => '\\Joomla\\CMS\\Image\\Filter\\Emboss',
+        'JImageFilterNegate' => '\\Joomla\\CMS\\Image\\Filter\\Negate',
+        'JImageFilterSmooth' => '\\Joomla\\CMS\\Image\\Filter\\Smooth',
+
+        // Joomla\\CMS\\Adapter\\* removed in Joomla 6.0 without replacement
+        // (deprecated since 4.3, joomla-cms PR #43794):
+        'JAdapter' => '\\Joomla\\CMS\\Adapter\\Adapter',
+        'JAdapterInstance' => '\\Joomla\\CMS\\Adapter\\AdapterInstance',
+
+        // WinCache removed in Joomla 5 (alias absent in j5/j6 classmaps):
+        'JCacheStorageWincache' => '\\Joomla\\CMS\\Cache\\Storage\\WincacheStorage',
+
+        // SQL Server support removed in Joomla 5 (alias absent in j5/j6 classmaps):
+        'JSchemaChangeitemSqlsrv' => '\\Joomla\\CMS\\Schema\\ChangeItem\\SqlsrvChangeItem',
+
+        // LDAP client moved into the LDAP plugin; Joomla\\Ldap\\ no longer aliased
+        // from CMS core in J5/J6 (alias absent in j5/j6 classmaps):
+        'JClientLdap' => '\\Joomla\\Ldap\\LdapClient',
+        'JLDAP' => '\\Joomla\\Ldap\\LdapClient',
+
+        */
+
         '\\Joomla\\Application\\Cli\\CliInput' => '\\Joomla\\CMS\\Application\\CLI\\CliInput',
         '\\Joomla\\Application\\Cli\\CliOutput' => '\\Joomla\\CMS\\Application\\CLI\\CliOutput',
         '\\Joomla\\Application\\Cli\\ColorStyle' => '\\Joomla\\CMS\\Application\\CLI\\ColorStyle',
+        '\\Joomla\\Application\\Cli\\Output\\Processor\\ColorProcessor' => '\\Joomla\\CMS\\Application\\CLI\\Output\\Processor\\ColorProcessor',
+        '\\Joomla\\Application\\Cli\\Output\\Processor\\ProcessorInterface' => '\\Joomla\\CMS\\Application\\CLI\\Output\\Processor\\ProcessorInterface',
         '\\Joomla\\Application\\Cli\\Output\\Stdout' => '\\Joomla\\CMS\\Application\\CLI\\Output\\Stdout',
         '\\Joomla\\Application\\Cli\\Output\\Xml' => '\\Joomla\\CMS\\Application\\CLI\\Output\\Xml',
         '\\Joomla\\CMS\\Crypt\\CipherInterface' => '\\Joomla\\Crypt\\CipherInterface',
@@ -84,8 +129,6 @@ final class LegacyCallToJClassToJModernRector extends AbstractRector
         'JAccessExceptionNotallowed' => '\\Joomla\\CMS\\Access\\Exception\\NotAllowed',
         'JAccessRule' => '\\Joomla\\CMS\\Access\\Rule',
         'JAccessRules' => '\\Joomla\\CMS\\Access\\Rules',
-        'JAdapter' => '\\Joomla\\CMS\\Adapter\\Adapter',
-        'JAdapterInstance' => '\\Joomla\\CMS\\Adapter\\AdapterInstance',
         'JApplicationAdministrator' => '\\Joomla\\CMS\\Application\\AdministratorApplication',
         'JApplicationBase' => '\\Joomla\\CMS\\Application\\BaseApplication',
         'JApplicationCli' => '\\Joomla\\CMS\\Application\\CliApplication',
@@ -118,7 +161,6 @@ final class LegacyCallToJClassToJModernRector extends AbstractRector
         'JCacheStorageHelper' => '\\Joomla\\CMS\\Cache\\Storage\\CacheStorageHelper',
         'JCacheStorageMemcached' => '\\Joomla\\CMS\\Cache\\Storage\\MemcachedStorage',
         'JCacheStorageRedis' => '\\Joomla\\CMS\\Cache\\Storage\\RedisStorage',
-        'JCacheStorageWincache' => '\\Joomla\\CMS\\Cache\\Storage\\WincacheStorage',
         'JCaptcha' => '\\Joomla\\CMS\\Captcha\\Captcha',
         'JCategories' => '\\Joomla\\CMS\\Categories\\Categories',
         'JCategoryNode' => '\\Joomla\\CMS\\Categories\\CategoryNode',
@@ -126,7 +168,6 @@ final class LegacyCallToJClassToJModernRector extends AbstractRector
         'JCli' => '\\Joomla\\CMS\\Application\\CliApplication',
         'JClientFtp' => '\\Joomla\\CMS\\Client\\FtpClient',
         'JClientHelper' => '\\Joomla\\CMS\\Client\\ClientHelper',
-        'JClientLdap' => '\\Joomla\\Ldap\\LdapClient',
         'JComponentExceptionMissing' => '\\Joomla\\CMS\\Component\\Exception\\MissingComponentException',
         'JComponentHelper' => '\\Joomla\\CMS\\Component\\ComponentHelper',
         'JComponentRecord' => '\\Joomla\\CMS\\Component\\ComponentRecord',
@@ -337,13 +378,6 @@ final class LegacyCallToJClassToJModernRector extends AbstractRector
         'JHttpTransportStream' => '\\Joomla\\CMS\\Http\\Transport\\StreamTransport',
         'JImage' => '\\Joomla\\CMS\\Image\\Image',
         'JImageFilter' => '\\Joomla\\CMS\\Image\\ImageFilter',
-        'JImageFilterBackgroundfill' => '\\Joomla\\CMS\\Image\\Filter\\Backgroundfill',
-        'JImageFilterBrightness' => '\\Joomla\\CMS\\Image\\Filter\\Brightness',
-        'JImageFilterContrast' => '\\Joomla\\CMS\\Image\\Filter\\Contrast',
-        'JImageFilterEdgedetect' => '\\Joomla\\CMS\\Image\\Filter\\Edgedetect',
-        'JImageFilterEmboss' => '\\Joomla\\CMS\\Image\\Filter\\Emboss',
-        'JImageFilterNegate' => '\\Joomla\\CMS\\Image\\Filter\\Negate',
-        'JImageFilterSmooth' => '\\Joomla\\CMS\\Image\\Filter\\Smooth',
         'JInput' => '\\Joomla\\CMS\\Input\\Input',
         'JInputCli' => '\\Joomla\\CMS\\Input\\Cli',
         'JInputCookie' => '\\Joomla\\CMS\\Input\\Cookie',
@@ -382,7 +416,6 @@ final class LegacyCallToJClassToJModernRector extends AbstractRector
         'JLayoutBase' => '\\Joomla\\CMS\\Layout\\BaseLayout',
         'JLayoutFile' => '\\Joomla\\CMS\\Layout\\FileLayout',
         'JLayoutHelper' => '\\Joomla\\CMS\\Layout\\LayoutHelper',
-        'JLDAP' => '\\Joomla\\Ldap\\LdapClient',
         'JLibraryHelper' => '\\Joomla\\CMS\\Helper\\LibraryHelper',
         'JLog' => '\\Joomla\\CMS\\Log\\Log',
         'JLogEntry' => '\\Joomla\\CMS\\Log\\LogEntry',
@@ -434,7 +467,6 @@ final class LegacyCallToJClassToJModernRector extends AbstractRector
         'JSchemaChangeitem' => '\\Joomla\\CMS\\Schema\\ChangeItem',
         'JSchemaChangeitemMysql' => '\\Joomla\\CMS\\Schema\\ChangeItem\\MysqlChangeItem',
         'JSchemaChangeitemPostgresql' => '\\Joomla\\CMS\\Schema\\ChangeItem\\PostgresqlChangeItem',
-        'JSchemaChangeitemSqlsrv' => '\\Joomla\\CMS\\Schema\\ChangeItem\\SqlsrvChangeItem',
         'JSchemaChangeset' => '\\Joomla\\CMS\\Schema\\ChangeSet',
         'JSession' => '\\Joomla\\CMS\\Session\\Session',
         'JStream' => '\\Joomla\\CMS\\Filesystem\\Stream',
